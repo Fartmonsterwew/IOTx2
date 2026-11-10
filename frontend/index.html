@@ -1,0 +1,391 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- PAGE CONFIGURATION -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070b14">
+    <title>Field Beans | Environmental Intelligence</title>
+
+    <!-- EXTERNAL FONTS AND LIBRARIES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- HEADER AND NAVIGATION -->
+    <header class="header">
+        <a href="#home" class="logo">
+            <span class="logo-symbol">✳</span>
+            <span>FIELD<span class="logo-light">BEANS</span></span>
+        </a>
+
+        <nav class="navigation">
+            <a href="#monitoring">Monitoring</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#alerts">Alerts</a>
+            <a href="#system">System</a>
+        </nav>
+
+        <div class="header-right">
+            <div class="device-indicator">
+                <span id="connectionDot" class="status-dot"></span>
+                <span id="connectionText">CONNECTING</span>
+            </div>
+
+            <div class="view-selector">
+                <button id="desktopView" class="view-button active" type="button">Desktop</button>
+                <button id="mobileView" class="view-button" type="button">Mobile</button>
+            </div>
+
+            <a class="header-cta" href="#monitoring">OPEN SYSTEM <span>↗</span></a>
+        </div>
+    </header>
+
+    <main class="site-shell">
+
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="hero-visual">
+                <div class="stars stars-one"></div>
+                <div class="stars stars-two"></div>
+                <div class="planet-glow"></div>
+                <div class="planet"></div>
+
+                <div class="hero-visual-caption">
+                    <span>FIELD BEANS / IOT ENVIRONMENT</span>
+                    <span>53° 20' N — 6° 15' W</span>
+                </div>
+
+                <div class="hero-visual-index">01 / 05</div>
+            </div>
+
+            <div class="hero-content">
+                <p class="eyebrow">
+                    <span class="eyebrow-line"></span>
+                    SMART AGRICULTURE · IOT PROJECT
+                </p>
+
+                <h1>
+                    GROWTH<br>
+                    UNDER<br>
+                    <span>INTELLIGENCE.</span>
+                </h1>
+
+                <p class="hero-description">
+                    Continuous environmental monitoring for field bean cultivation.
+                    Sensor data, connected systems and crop insights in one place.
+                </p>
+
+                <a href="#monitoring" class="hero-link">
+                    EXPLORE LIVE DATA <span>↗</span>
+                </a>
+
+                <div class="hero-meta">
+                    <div>
+                        <span class="meta-label">PLATFORM</span>
+                        <strong>FIELD BEANS IOT</strong>
+                    </div>
+                    <div>
+                        <span class="meta-label">DATA MODE</span>
+                        <strong>LIVE / 5 SEC</strong>
+                    </div>
+                    <div>
+                        <span class="meta-label">NETWORK</span>
+                        <strong>ESP32 · WI-FI</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-side-label">
+                ENVIRONMENTAL INTELLIGENCE / 2026
+            </div>
+        </section>
+
+        <!-- PROJECT INTRODUCTION -->
+        <section class="intro-strip">
+            <span class="section-index">[ 01 — OVERVIEW ]</span>
+
+            <p>
+                MEASURE THE ENVIRONMENT.<br>
+                <span>UNDERSTAND THE CROP.</span>
+            </p>
+
+            <span class="intro-note">
+                A connected monitoring platform<br>
+                for smarter growing decisions.
+            </span>
+        </section>
+
+        <!-- LIVE SENSOR MONITORING -->
+        <section class="monitoring-section" id="monitoring">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">02 / LIVE MONITORING</p>
+                    <h2>FIELD <span>TELEMETRY</span></h2>
+                </div>
+
+                <div class="live-indicator">
+                    <span class="status-dot online"></span>
+                    <span>LIVE DATA STREAM</span>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+
+                <!-- SENSOR 01: SOIL MOISTURE -->
+                <article class="metric-card metric-primary">
+                    <div class="metric-top">
+                        <span>01 / SOIL MOISTURE</span>
+                        <span class="metric-state" id="soilStatus">ACTIVE SENSOR</span>
+                    </div>
+
+                    <div class="metric-main">
+                        <div>
+                            <p class="metric-label">RAW ANALOG READING</p>
+                            <div class="metric-value">
+                                <span id="soilValue">--</span>
+                                <small>ADC</small>
+                            </div>
+                        </div>
+
+                        <div class="metric-graphic">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <span>ESP32 / GPIO 34</span>
+                        <span id="soilUpdate">WAITING FOR DATA</span>
+                    </div>
+                </article>
+
+                <!-- SENSOR 02: AIR TEMPERATURE -->
+                <article class="metric-card metric-placeholder">
+                    <div class="metric-top">
+                        <span>02 / AIR TEMPERATURE</span>
+                        <span class="metric-state state-pending" id="temperatureStatus">NOT CONNECTED</span>
+                    </div>
+
+                    <div class="placeholder-body">
+                        <span class="placeholder-value">
+                            <span id="temperatureValue">--</span><small>°C</small>
+                        </span>
+                        <p id="temperatureMessage">AWAITING SENSOR<br>INTEGRATION</p>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <span>DHT20</span>
+                        <span id="temperatureUpdate">CHANNEL PENDING</span>
+                    </div>
+                </article>
+
+                <!-- SENSOR 03: AIR HUMIDITY -->
+                <article class="metric-card metric-placeholder">
+                    <div class="metric-top">
+                        <span>03 / AIR HUMIDITY</span>
+                        <span class="metric-state state-pending" id="humidityStatus">NOT CONNECTED</span>
+                    </div>
+
+                    <div class="placeholder-body">
+                        <span class="placeholder-value">
+                            <span id="humidityValue">--</span><small>%</small>
+                        </span>
+                        <p id="humidityMessage">AWAITING SENSOR<br>INTEGRATION</p>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <span>DHT20</span>
+                        <span id="humidityUpdate">CHANNEL PENDING</span>
+                    </div>
+                </article>
+
+                <!-- SENSOR 04: LIGHT INTENSITY -->
+                <article class="metric-card metric-placeholder">
+                    <div class="metric-top">
+                        <span>04 / LIGHT INTENSITY</span>
+                        <span class="metric-state state-pending" id="lightStatus">NOT CONNECTED</span>
+                    </div>
+
+                    <div class="placeholder-body">
+                        <span class="placeholder-value">
+                            <span id="lightValue">--</span><small>LUX</small>
+                        </span>
+                        <p id="lightMessage">AWAITING SENSOR<br>INTEGRATION</p>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <span>GROVE LIGHT SENSOR</span>
+                        <span id="lightUpdate">CHANNEL PENDING</span>
+                    </div>
+                </article>
+
+                <!-- SENSOR 05: GAS -->
+                <article class="metric-card metric-placeholder">
+                    <div class="metric-top">
+                        <span>05 / GAS SENSOR</span>
+                        <span class="metric-state state-pending" id="gasStatus">NOT CONNECTED</span>
+                    </div>
+
+                    <div class="placeholder-body">
+                        <span class="placeholder-value">
+                            <span id="gasValue">--</span><small>RAW</small>
+                        </span>
+                        <p id="gasMessage">AWAITING SENSOR<br>INTEGRATION</p>
+                    </div>
+
+                    <div class="metric-bottom">
+                        <span>GROVE GAS SENSOR V1.5</span>
+                        <span id="gasUpdate">CHANNEL PENDING</span>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- HISTORICAL DATA AND ANALYTICS -->
+        <section class="analytics-section" id="analytics">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">03 / DATA ANALYSIS</p>
+                    <h2>SIGNAL <span>HISTORY</span></h2>
+                    <p class="section-subtitle">
+                        Evolution of the latest soil moisture sensor readings.
+                    </p>
+                </div>
+
+                <span class="history-count" id="readingCount">0 MEASUREMENTS</span>
+            </div>
+
+            <div class="analytics-layout">
+                <div class="chart-panel">
+                    <div class="chart-panel-top">
+                        <span>SOIL MOISTURE / RAW ADC</span>
+                        <span>LAST 50 READINGS</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="soilChart"></canvas>
+                    </div>
+
+                    <div class="chart-axis-note">
+                        <span>TIME →</span>
+                        <span>RAW SENSOR VALUE ↑</span>
+                    </div>
+                </div>
+
+                <aside class="data-panel">
+                    <p class="eyebrow">LATEST DATABASE ENTRY</p>
+                    <h3 id="lastUpdate">--:--:--</h3>
+
+                    <p class="data-description">
+                        Most recent measurement received from the ESP32
+                        and stored in MySQL.
+                    </p>
+
+                    <div class="data-divider"></div>
+
+                    <div class="data-row">
+                        <span>DATABASE</span>
+                        <strong>MYSQL</strong>
+                    </div>
+
+                    <div class="data-row">
+                        <span>REFRESH RATE</span>
+                        <strong>5 SECONDS</strong>
+                    </div>
+
+                    <div class="data-row">
+                        <span>RECORDS SHOWN</span>
+                        <strong>50 MAX.</strong>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- SYSTEM ALERTS -->
+        <section class="alerts-section" id="alerts">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">04 / EVENT MANAGEMENT</p>
+                    <h2>SYSTEM <span>ALERTS</span></h2>
+                </div>
+
+                <span class="section-tag">MONITORING STATUS</span>
+            </div>
+
+            <div class="alert-row">
+                <span class="alert-code">A — 001</span>
+                <span class="alert-indicator neutral"></span>
+
+                <div class="alert-copy">
+                    <strong>NO ACTIVE ALERTS</strong>
+                    <p>
+                        Alerts will appear here when sensor thresholds are configured.
+                    </p>
+                </div>
+
+                <span class="alert-time">SYSTEM</span>
+            </div>
+        </section>
+
+        <!-- SYSTEM INFRASTRUCTURE STATUS -->
+        <section class="system-section" id="system">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">05 / INFRASTRUCTURE</p>
+                    <h2>SYSTEM <span>STATUS</span></h2>
+                </div>
+            </div>
+
+            <div class="system-grid">
+                <div class="system-item">
+                    <span class="system-label">EDGE DEVICE</span>
+                    <strong id="deviceStatus">CHECKING...</strong>
+                    <span class="system-detail">ESP32 DEVELOPMENT BOARD</span>
+                </div>
+
+                <div class="system-item">
+                    <span class="system-label">TRANSPORT</span>
+                    <strong>HTTP / WI-FI</strong>
+                    <span class="system-detail">LOCAL NETWORK</span>
+                </div>
+
+                <div class="system-item">
+                    <span class="system-label">BACKEND</span>
+                    <strong>FLASK API</strong>
+                    <span class="system-detail">PYTHON SERVER</span>
+                </div>
+
+                <div class="system-item">
+                    <span class="system-label">DATA STORAGE</span>
+                    <strong>MYSQL</strong>
+                    <span class="system-detail">FIELDBEANS_IOT</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <a href="#home" class="footer-logo">
+                FIELD<span>BEANS</span><b>®</b>
+            </a>
+
+            <p>ENVIRONMENTAL INTELLIGENCE THROUGH CONNECTED TECHNOLOGY.</p>
+            <span>FIELD BEANS IOT / 2026</span>
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT -->
+    <script src="/frontend/script.js"></script>
+</body>
+</html>

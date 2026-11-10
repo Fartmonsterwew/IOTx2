@@ -68,6 +68,7 @@ void loop() {
 
   Serial.println("--------------------");
 
+  
   atom();
 
   sendSensorData();
@@ -76,7 +77,8 @@ void loop() {
 }
 
 void atom() {
-  while (humidity > 40.0) {
+
+  if (humidity > 80.0) {
     digitalWrite(18, HIGH);
     Serial.println("Atomizer ON");
     delay(10000);
@@ -86,8 +88,8 @@ void atom() {
     delay(10000);
 
     humidity = dht20.getHumidity();
-    break
   }
+  
 }
 
 void sendSensorData() {

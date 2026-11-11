@@ -20,6 +20,9 @@ const char* serverURL = "http://172.20.10.2:5000/sensors";
 const int soilPin = 34;
 int soilValue = 0;
 
+//light sensor
+const int lightPin = ;
+
 void setup() {
   Serial.begin(115200);
 
@@ -39,7 +42,7 @@ void setup() {
   Serial.print("ESP32 IP: ");
   Serial.println(WiFi.localIP());
 
-  while (dht20.begin() != 0) {
+  while (dht20.begin() != 0) {                    // Error checking for DHT20 sensor
     Serial.println("DHT20 sensor not detected!");
     delay(10000);
   }
@@ -54,30 +57,27 @@ void loop() {
   // Read soil moisture
   soilValue = analogRead(soilPin);
 
-  Serial.print("Temperature: ");
+  // Read light value
+  lightValue = analogRead(lightPin);
+
+  Serial.print("Temperature: ");  // Display for Temprature level
   Serial.print(temperature);
   Serial.println(" C");
 
-  humidity = humidity * 100;
+  humidity = humidity * 100;  // Display for humidity level
   Serial.print("Humidity: ");
   Serial.print(humidity);
   Serial.println(" %");
 
-  Serial.print("Soil Moisture: ");
+  Serial.print("Soil Moisture: ");  // Display for soil level
   Serial.println(soilValue);
+
+  Serial.print("light value: "); // Display for light level 
+  Serial.println(lightValue);
 
   Serial.println("--------------------");
 
   
-  atom();
-
-  sendSensorData();
-
-  delay(2000);
-}
-
-void atom() {
-
   if (humidity > 80.0) {
     digitalWrite(18, HIGH);
     Serial.println("Atomizer ON");
@@ -86,11 +86,12 @@ void atom() {
     digitalWrite(18, LOW);
     Serial.println(digitalRead(18));
     delay(10000);
-
-    humidity = dht20.getHumidity();
   }
-  
+  sendSensorData();
+
+  delay(2000);
 }
+
 
 void sendSensorData() {
   if (WiFi.status() == WL_CONNECTED) {
@@ -102,7 +103,10 @@ void sendSensorData() {
     String jsonData = "{";
     jsonData += "\"soil_moisture\":" + String(soilValue) + ",";
     jsonData += "\"temperature\":" + String(temperature, 2) + ",";
-    jsonData += "\"humidity\":" + String(humidity, 2);
+    jsonData += "\"humidity\":" + String(humidity, 2) + ",";
+
+    jsonData += "\"light\":" + String(lightValue, 2);  //MARTAAAAAAAA pls check me ;-;
+
     jsonData += "}";
 
     Serial.println("Sending sensor data:");

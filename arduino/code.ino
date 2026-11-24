@@ -21,7 +21,7 @@ const int soilPin = 34;
 int soilValue = 0;
 
 //light sensor
-const int lightPin = ;
+const int lightPin = 25;
 int lightValue = 0;
 
 

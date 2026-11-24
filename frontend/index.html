@@ -121,6 +121,93 @@
             </span>
         </section>
 
+        <!-- GROWTH PHASE CONTROL -->
+        <section class="phase-section" id="growth-phase">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">03 / CROP MANAGEMENT</p>
+                    <h2>GROWTH <span>PHASE CONTROL</span></h2>
+                    <p class="section-subtitle">
+                        Select the current growth stage and check its
+                        recommended environmental conditions.
+                    </p>
+                </div>
+            </div>
+
+            <div class="phase-layout">
+
+                <div class="phase-control-panel">
+
+                    <p class="eyebrow">CURRENT GROWTH STAGE</p>
+
+                    <h3 id="currentPhaseName">Germination / Seedling</h3>
+
+                    <p id="currentPhaseDuration" class="phase-description">
+                        Stage 1 of 6 · 10–14 days
+                    </p>
+
+                    <label for="phaseSelect">SELECT GROWTH PHASE</label>
+
+                    <select id="phaseSelect">
+                        <option value="0">Germination / Seedling</option>
+                        <option value="1">Vegetative</option>
+                        <option value="2">Flowering</option>
+                        <option value="3">Pod Set</option>
+                        <option value="4">Grain Filling</option>
+                        <option value="5">Maturation</option>
+                    </select>
+
+                    <button type="button" id="resetPhase" class="phase-reset">
+                        RESET TO FIRST STAGE
+                    </button>
+
+                </div>
+
+                <div class="phase-conditions-panel">
+
+                    <p class="eyebrow">RECOMMENDED CONDITIONS</p>
+
+                    <div class="phase-conditions-grid">
+
+                        <div class="phase-condition">
+                            <span>AIR TEMPERATURE</span>
+                            <strong id="phaseAirTemp">10–15 / 5–8 °C</strong>
+                            <small>Day / Night</small>
+                        </div>
+
+                        <div class="phase-condition">
+                            <span>AIR HUMIDITY</span>
+                            <strong id="phaseHumidity">65–75%</strong>
+                            <small>Relative humidity</small>
+                        </div>
+
+                        <div class="phase-condition">
+                            <span>SOIL TEMPERATURE</span>
+                            <strong id="phaseSoilTemp">7–12 °C</strong>
+                            <small>Target range</small>
+                        </div>
+
+                        <div class="phase-condition">
+                            <span>SUNLIGHT</span>
+                            <strong id="phaseSunlight">0 hours</strong>
+                            <small>Daily exposure</small>
+                        </div>
+
+                        <div class="phase-condition">
+                            <span>PPFD</span>
+                            <strong id="phasePPFD">N/A</strong>
+                            <small>µmol/m²/s</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- LIVE SENSOR MONITORING -->
         <section class="monitoring-section" id="monitoring">
             <div class="section-heading">
@@ -217,7 +304,7 @@
 
                     <div class="placeholder-body">
                         <span class="placeholder-value">
-                            <span id="lightValue">--</span><small>LUX</small>
+                            <span id="lightValue">--</span><small>ADC</small>
                         </span>
                         <p id="lightMessage">AWAITING SENSOR<br>INTEGRATION</p>
                     </div>
@@ -253,19 +340,25 @@
 
         <!-- HISTORICAL DATA AND ANALYTICS -->
         <section class="analytics-section" id="analytics">
+
             <div class="section-heading">
                 <div>
                     <p class="eyebrow">03 / DATA ANALYSIS</p>
                     <h2>SIGNAL <span>HISTORY</span></h2>
                     <p class="section-subtitle">
-                        Evolution of the latest soil moisture sensor readings.
+                        Historical evolution of all environmental sensor readings.
                     </p>
                 </div>
 
-                <span class="history-count" id="readingCount">0 MEASUREMENTS</span>
+                <span class="history-count" id="readingCount">
+                    0 MEASUREMENTS
+                </span>
             </div>
 
-            <div class="analytics-layout">
+            <!-- SENSOR CHARTS -->
+            <div class="charts-grid">
+
+                <!-- SOIL MOISTURE -->
                 <div class="chart-panel">
                     <div class="chart-panel-top">
                         <span>SOIL MOISTURE / RAW ADC</span>
@@ -278,37 +371,108 @@
 
                     <div class="chart-axis-note">
                         <span>TIME →</span>
-                        <span>RAW SENSOR VALUE ↑</span>
+                        <span>RAW VALUE ↑</span>
                     </div>
                 </div>
 
-                <aside class="data-panel">
-                    <p class="eyebrow">LATEST DATABASE ENTRY</p>
-                    <h3 id="lastUpdate">--:--:--</h3>
-
-                    <p class="data-description">
-                        Most recent measurement received from the ESP32
-                        and stored in MySQL.
-                    </p>
-
-                    <div class="data-divider"></div>
-
-                    <div class="data-row">
-                        <span>DATABASE</span>
-                        <strong>MYSQL</strong>
+                <!-- AIR TEMPERATURE -->
+                <div class="chart-panel">
+                    <div class="chart-panel-top">
+                        <span>AIR TEMPERATURE / °C</span>
+                        <span>LAST 50 READINGS</span>
                     </div>
 
-                    <div class="data-row">
-                        <span>REFRESH RATE</span>
-                        <strong>5 SECONDS</strong>
+                    <div class="chart-container">
+                        <canvas id="temperatureChart"></canvas>
                     </div>
 
-                    <div class="data-row">
-                        <span>RECORDS SHOWN</span>
-                        <strong>50 MAX.</strong>
+                    <div class="chart-axis-note">
+                        <span>TIME →</span>
+                        <span>TEMPERATURE (°C) ↑</span>
                     </div>
-                </aside>
+                </div>
+
+                <!-- AIR HUMIDITY -->
+                <div class="chart-panel">
+                    <div class="chart-panel-top">
+                        <span>AIR HUMIDITY / %</span>
+                        <span>LAST 50 READINGS</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="humidityChart"></canvas>
+                    </div>
+
+                    <div class="chart-axis-note">
+                        <span>TIME →</span>
+                        <span>HUMIDITY (%) ↑</span>
+                    </div>
+                </div>
+
+                <!-- LIGHT INTENSITY -->
+                <div class="chart-panel">
+                    <div class="chart-panel-top">
+                        <span>LIGHT INTENSITY / RAW ADC</span>
+                        <span>LAST 50 READINGS</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="lightChart"></canvas>
+                    </div>
+
+                    <div class="chart-axis-note">
+                        <span>TIME →</span>
+                        <span>RAW VALUE ↑</span>
+                    </div>
+                </div>
+
+                <!-- GAS SENSOR -->
+                <div class="chart-panel">
+                    <div class="chart-panel-top">
+                        <span>GAS SENSOR / RAW</span>
+                        <span>LAST 50 READINGS</span>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="gasChart"></canvas>
+                    </div>
+
+                    <div class="chart-axis-note">
+                        <span>TIME →</span>
+                        <span>RAW VALUE ↑</span>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- DATABASE INFORMATION -->
+            <aside class="data-panel">
+                <p class="eyebrow">LATEST DATABASE ENTRY</p>
+                <h3 id="lastUpdate">--:--:--</h3>
+
+                <p class="data-description">
+                    Most recent measurement received from the ESP32
+                    and stored in MySQL.
+                </p>
+
+                <div class="data-divider"></div>
+
+                <div class="data-row">
+                    <span>DATABASE</span>
+                    <strong>MYSQL</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>REFRESH RATE</span>
+                    <strong>5 SECONDS</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>RECORDS SHOWN</span>
+                    <strong>50 MAX.</strong>
+                </div>
+            </aside>
+
         </section>
 
         <!-- SYSTEM ALERTS -->

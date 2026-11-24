@@ -56,7 +56,7 @@ def receive_soil_data():
         return jsonify({"error": str(e)}), 500
 
 
-# Latest reading
+# Latest soil moisture reading
 @app.route("/api/soil/latest")
 def latest_soil():
     try:
@@ -85,7 +85,7 @@ def latest_soil():
         return jsonify({"error": str(e)}), 500
 
 
-# Historical readings
+# Historical soil moisture readings
 @app.route("/api/soil/history")
 def soil_history():
     try:
@@ -165,6 +165,8 @@ def receive_sensor_data():
         print("Database error:", e)
         return jsonify({"error": str(e)}), 500
 
+
+# Latest reading from all sensors
 @app.route("/api/sensors/latest", methods=["GET"])
 def latest_sensors():
     try:
@@ -191,6 +193,7 @@ def latest_sensors():
         """)
 
         result = cursor.fetchone()
+
         cursor.close()
         connection.close()
 
@@ -200,6 +203,47 @@ def latest_sensors():
         print("Database error:", e)
         return jsonify({"error": str(e)}), 500
 
-    
+
+# HISTORICAL DATA FROM ALL SENSORS
+@app.route("/api/sensors/history", methods=["GET"])
+def sensors_history():
+    try:
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                DATE_FORMAT(timestamp, '%Y-%m-%d %H:%i:%s') AS timestamp,
+                soil_moisture_raw,
+                temperature,
+                humidity,
+                light_raw,
+                day_night,
+                gas_raw
+            FROM Sensor_Readings
+            WHERE soil_moisture_raw IS NOT NULL
+               OR temperature IS NOT NULL
+               OR humidity IS NOT NULL
+               OR light_raw IS NOT NULL
+               OR gas_raw IS NOT NULL
+            ORDER BY reading_id DESC
+            LIMIT 50
+        """)
+
+        results = cursor.fetchall()
+
+        # Reverse readings to display them chronologically
+        results.reverse()
+
+        cursor.close()
+        connection.close()
+
+        return jsonify(results)
+
+    except Exception as e:
+        print("Historical sensor data error:", e)
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

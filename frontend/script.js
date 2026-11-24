@@ -25,8 +25,7 @@ const lastUpdate = document.getElementById("lastUpdate");
 const readingCount = document.getElementById("readingCount");
 
 // Historical chart
-let soilChart;
-
+const sensorCharts = {};
 
 /* =========================================================
    2. SENSOR CONFIGURATION
@@ -127,32 +126,39 @@ function initializePendingSensors() {
    Create the historical soil moisture chart
    ========================================================= */
 
-function createChart() {
-    const canvas = document.getElementById("soilChart");
+/* =========================================================
+   6. CHART CONFIGURATION
+   Create one chart for each sensor
+   ========================================================= */
+
+function createSensorChart(canvasId, label, color) {
+
+    const canvas = document.getElementById(canvasId);
 
     if (!canvas || typeof Chart === "undefined") {
-        console.error("Chart.js is unavailable.");
+        console.error("Chart unavailable:", canvasId);
         return;
     }
 
-    soilChart = new Chart(canvas, {
+    sensorCharts[canvasId] = new Chart(canvas, {
         type: "line",
 
         data: {
             labels: [],
 
             datasets: [{
-                label: "Soil moisture raw value",
+                label: label,
                 data: [],
-                borderColor: "#75a8ff",
-                backgroundColor: "rgba(65, 125, 235, 0.13)",
+                borderColor: color,
+                backgroundColor: color + "20",
                 borderWidth: 2,
                 fill: true,
                 tension: 0.22,
+                spanGaps: false,
                 pointRadius: 2,
                 pointHoverRadius: 5,
-                pointBackgroundColor: "#dce9ff",
-                pointBorderColor: "#75a8ff"
+                pointBackgroundColor: color,
+                pointBorderColor: color
             }]
         },
 
@@ -227,6 +233,43 @@ function createChart() {
     });
 }
 
+
+/* =========================================================
+   CREATE ALL FIVE SENSOR CHARTS
+   ========================================================= */
+
+function createChart() {
+
+    createSensorChart(
+        "soilChart",
+        "Soil moisture",
+        "#75a8ff"
+    );
+
+    createSensorChart(
+        "temperatureChart",
+        "Air temperature",
+        "#ff9875"
+    );
+
+    createSensorChart(
+        "humidityChart",
+        "Air humidity",
+        "#65d6c4"
+    );
+
+    createSensorChart(
+        "lightChart",
+        "Light intensity",
+        "#f5ce70"
+    );
+
+    createSensorChart(
+        "gasChart",
+        "Gas sensor",
+        "#bd91ff"
+    );
+}
 
 /* =========================================================
    7. LATEST SOIL MOISTURE READING
@@ -315,10 +358,17 @@ async function updateLatestReading() {
    Request historical measurements from Flask
    ========================================================= */
 
+/* =========================================================
+   8. SENSOR HISTORY
+   Request historical measurements from Flask
+   ========================================================= */
+
 async function updateHistory() {
+
     try {
+
         const response = await fetch(
-            "/api/soil/history",
+            "/api/sensors/history",
             { cache: "no-store" }
         );
 
@@ -330,10 +380,9 @@ async function updateHistory() {
 
         const readings = await response.json();
 
-        if (!soilChart) return;
-
         // Convert timestamps into chart labels
         const labels = readings.map(item => {
+
             const date = parseDate(item.timestamp);
 
             return date
@@ -345,23 +394,60 @@ async function updateHistory() {
                 : "--:--:--";
         });
 
-        // Extract raw sensor values
-        const values = readings.map(
-            item => item.soil_moisture_raw
-        );
+        // Associate each chart with its database column
+        const chartConfigurations = [
+            {
+                chart: "soilChart",
+                field: "soil_moisture_raw"
+            },
+            {
+                chart: "temperatureChart",
+                field: "temperature"
+            },
+            {
+                chart: "humidityChart",
+                field: "humidity"
+            },
+            {
+                chart: "lightChart",
+                field: "light_raw"
+            },
+            {
+                chart: "gasChart",
+                field: "gas_raw"
+            }
+        ];
 
-        // Update chart data
-        soilChart.data.labels = labels;
-        soilChart.data.datasets[0].data = values;
+        // Update each chart
+        chartConfigurations.forEach(config => {
 
-        soilChart.update("none");
+            const chart = sensorCharts[config.chart];
+
+            if (!chart) return;
+
+            const values = readings.map(item => {
+
+                const value = item[config.field];
+
+                return value === null || value === undefined
+                    ? null
+                    : Number(value);
+            });
+
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = values;
+
+            chart.update("none");
+        });
 
         // Update measurement counter
         readingCount.textContent =
             `${readings.length} MEASUREMENTS`;
 
     } catch (error) {
+
         console.error("History error:", error);
+
     }
 }
 
@@ -484,3 +570,136 @@ refreshDashboard();
 
 // Refresh data every 5 seconds
 setInterval(refreshDashboard, 5000);
+
+/* =========================================================
+   GROWTH PHASE MANAGEMENT
+   Select, display and reset the crop growth stage
+   ========================================================= */
+
+const growthPhases = [
+    {
+        name: "Germination / Seedling",
+        duration: "10–14 days",
+        airTemp: "10–15 / 5–8 °C",
+        humidity: "65–75%",
+        soilTemp: "7–12 °C",
+        sunlight: "0 hours",
+        ppfd: "N/A"
+    },
+    {
+        name: "Vegetative",
+        duration: "40–50 days",
+        airTemp: "14–18 / 6–10 °C",
+        humidity: "60–70%",
+        soilTemp: "7–12 °C",
+        sunlight: "12–14 hours",
+        ppfd: "300–450"
+    },
+    {
+        name: "Flowering",
+        duration: "20–30 days",
+        airTemp: "16–20 / 10–13 °C",
+        humidity: "55–65%",
+        soilTemp: "7–12 °C",
+        sunlight: "14–16 hours",
+        ppfd: "500–700"
+    },
+    {
+        name: "Pod Set",
+        duration: "25–35 days",
+        airTemp: "17–21 / 11–14 °C",
+        humidity: "60–65%",
+        soilTemp: "7–12 °C",
+        sunlight: "15–16 hours",
+        ppfd: "600–750"
+    },
+    {
+        name: "Grain Filling",
+        duration: "30–40 days",
+        airTemp: "18–22 / 11–14 °C",
+        humidity: "60–65%",
+        soilTemp: "7–12 °C",
+        sunlight: "14–15 hours",
+        ppfd: "500–650"
+    },
+    {
+        name: "Maturation",
+        duration: "15–25 days",
+        airTemp: "18–24 / 12–15 °C",
+        humidity: "50–55%",
+        soilTemp: "7–12 °C",
+        sunlight: "12–13 hours",
+        ppfd: "300–450"
+    }
+];
+
+
+function updateGrowthPhase(phaseIndex) {
+
+    const phase = growthPhases[phaseIndex];
+
+    if (!phase) return;
+
+    document.getElementById("currentPhaseName").textContent =
+        phase.name;
+
+    document.getElementById("currentPhaseDuration").textContent =
+        `Stage ${phaseIndex + 1} of 6 · ${phase.duration}`;
+
+    document.getElementById("phaseAirTemp").textContent =
+        phase.airTemp;
+
+    document.getElementById("phaseHumidity").textContent =
+        phase.humidity;
+
+    document.getElementById("phaseSoilTemp").textContent =
+        phase.soilTemp;
+
+    document.getElementById("phaseSunlight").textContent =
+        phase.sunlight;
+
+    document.getElementById("phasePPFD").textContent =
+        phase.ppfd;
+
+    document.getElementById("phaseSelect").value =
+        phaseIndex;
+
+    // Save selected phase in the browser
+    localStorage.setItem("fieldBeansGrowthPhase", phaseIndex);
+}
+
+
+function initializeGrowthPhase() {
+
+    const phaseSelect = document.getElementById("phaseSelect");
+    const resetButton = document.getElementById("resetPhase");
+
+    if (!phaseSelect || !resetButton) return;
+
+    // Load saved phase, or start at the first stage
+    const savedPhase = Number(
+        localStorage.getItem("fieldBeansGrowthPhase") ?? 0
+    );
+
+    const initialPhase =
+        Number.isInteger(savedPhase) &&
+        savedPhase >= 0 &&
+        savedPhase < growthPhases.length
+            ? savedPhase
+            : 0;
+
+    updateGrowthPhase(initialPhase);
+
+    // Change phase manually
+    phaseSelect.addEventListener("change", () => {
+        updateGrowthPhase(Number(phaseSelect.value));
+    });
+
+    // Reset to the first growth stage
+    resetButton.addEventListener("click", () => {
+        updateGrowthPhase(0);
+    });
+}
+
+// Initialize growth phase management
+initializeGrowthPhase();

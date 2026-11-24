@@ -22,6 +22,8 @@ int soilValue = 0;
 
 //light sensor
 const int lightPin = ;
+int lightValue = 0;
+
 
 void setup() {
   Serial.begin(115200);
@@ -104,9 +106,7 @@ void sendSensorData() {
     jsonData += "\"soil_moisture\":" + String(soilValue) + ",";
     jsonData += "\"temperature\":" + String(temperature, 2) + ",";
     jsonData += "\"humidity\":" + String(humidity, 2) + ",";
-
-    jsonData += "\"light\":" + String(lightValue, 2);  //MARTAAAAAAAA pls check me ;-;
-
+    jsonData += "\"light\":" + String(lightValue);  //MARTAAAAAAAA pls check me ;-;
     jsonData += "}";
 
     Serial.println("Sending sensor data:");

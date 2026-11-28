@@ -44,7 +44,8 @@ void setup() {
   Serial.print("ESP32 IP: ");
   Serial.println(WiFi.localIP());
 
-  while (dht20.begin() != 0) {                    // Error checking for DHT20 sensor
+  // Error checking for DHT20 sensor
+  while (dht20.begin() != 0) {                    
     Serial.println("DHT20 sensor not detected!");
     delay(10000);
   }
@@ -62,25 +63,31 @@ void loop() {
   // Read light value
   lightValue = analogRead(lightPin);
 
-  Serial.print("Temperature: ");  // Display for Temprature level
+  // Display for Temprature level
+  Serial.print("Temperature: ");  
   Serial.print(temperature);
   Serial.println(" C");
 
-  humidity = humidity * 100;  // Display for humidity level
+  // Display for humidity level
+  humidity = humidity * 100;  
   Serial.print("Humidity: ");
   Serial.print(humidity);
   Serial.println(" %");
 
-  Serial.print("Soil Moisture: ");  // Display for soil level
+  // Display for soil level
+  Serial.print("Soil Moisture: ");  
   Serial.println(soilValue);
 
-  Serial.print("light value: "); // Display for light level 
+  // Display for light level
+  Serial.print("light value: ");  
   Serial.println(lightValue);
 
   Serial.println("--------------------");
 
-  
-  if (humidity > 80.0) {
+  //If the humidity gets below a certain level then this if statment will run
+  //It simply turns on an atomizer in a buckect of water which will atomize the water raising the humidity
+
+  if (humidity < 80.0) {
     digitalWrite(18, HIGH);
     Serial.println("Atomizer ON");
     delay(10000);
@@ -89,8 +96,10 @@ void loop() {
     Serial.println(digitalRead(18));
     delay(10000);
   }
+
   sendSensorData();
 
+  //Gather data every 2 seconds
   delay(2000);
 }
 
